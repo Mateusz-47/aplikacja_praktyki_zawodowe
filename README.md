@@ -7,6 +7,7 @@ Aplikacja konsolowa w języku C# służąca do zarządzania uczniami i firmami w
 - .NET / C# (aplikacja konsolowa)
 - Azure SQL Database
 - Microsoft.Data.SqlClient
+- Dapper
 
 ## 📦 Funkcjonalności
 
