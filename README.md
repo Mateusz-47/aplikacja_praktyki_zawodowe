@@ -109,7 +109,4 @@ Projekt stworzony do celów edukacyjnych – brak ograniczeń licencyjnych.
 ---
 
 ## ✍️ Autor
-
-Projekt stworzony w ramach praktyk zawodowych.  
 Autor: *Mateusz Rdzanek, Julian Nagrocki*  
-Szkoła: *Zespół Szkół Technicznych w Radomiu*
