@@ -1,113 +1,96 @@
-# System Rejestracji na Praktyki Zawodowe
 
-Aplikacja konsolowa w języku C# służąca do zarządzania uczniami i firmami w kontekście praktyk zawodowych. Projekt łączy się z bazą danych SQL (hostowaną na platformie Azure) i umożliwia m.in. dodawanie uczniów, przeglądanie firm, rejestrowanie uczniów na praktyki oraz generowanie prostych umów.
 
-## 🛠 Technologie
+# 📚 Projekt Praktyki Zawodowe
 
-- .NET / C# (aplikacja konsolowa)
-- Azure SQL Database
-- Microsoft.Data.SqlClient
-- Dapper
-
-## 📦 Funkcjonalności
-
-1. **Dodawanie uczniów**  
-   Pozwala na wprowadzenie danych ucznia do bazy (`Students`).
-
-2. **Wyświetlanie listy firm**  
-   Pokazuje wszystkie dostępne firmy z tabeli `Companies`.
-
-3. **Rejestracja ucznia na praktyki**  
-   Umożliwia zapisanie ucznia do firmy, jeśli dostępne są wolne miejsca (`Registrations`).
-
-4. **Lista uczniów zapisanych do firmy**  
-   Wyświetla uczniów przypisanych do danej firmy, wraz z datą rejestracji.
-
-5. **Lista wszystkich uczniów i firm**  
-   Drukuje osobno wszystkie wpisy z tabel `Students` i `Companies`.
-
-6. **Generowanie umowy**  
-   Tworzy plik tekstowy z umową praktyk na podstawie wpisu rejestracji.
+Aplikacja konsolowa w języku C# służąca do zarządzania praktykami zawodowymi uczniów. Pozwala na dodawanie uczniów i firm, przypisywanie uczniów do firm, generowanie umów oraz automatyczne wysyłanie ich na e-mail studenta.
 
 ---
 
-## 🔧 Konfiguracja
+## 🧩 Funkcjonalności
 
-Przed uruchomieniem aplikacji:
-
-1. Upewnij się, że masz dostęp do bazy danych na Azure SQL.
-2. Zmień ciąg połączenia (`ConnectionString`) w pliku `Program.cs` na własny, jeśli to konieczne:
-   ```csharp
-   private const string ConnectionString = "Server=...;Database=...;User ID=...;Password=...;";
-   ```
+- ✅ Dodawanie, przeglądanie i usuwanie uczniów
+- ✅ Dodawanie, przeglądanie i usuwanie firm
+- ✅ Przypisywanie uczniów do firm
+- ✅ Generowanie pliku umowy `.txt`
+- ✅ Automatyczne wysyłanie umowy na e-mail studenta (Outlook SMTP)
 
 ---
 
-## 📁 Struktura bazy danych (SQL)
+## 📁 Struktura projektu
 
-Poniżej przedstawiono definicje tabel wymaganych do działania aplikacji:
-
-```sql
-CREATE TABLE Students (
-    Id INT IDENTITY PRIMARY KEY,
-    FirstName NVARCHAR(50),
-    LastName NVARCHAR(50),
-    Class NVARCHAR(20),
-    Phone NVARCHAR(20),
-    Email NVARCHAR(100)
-);
-
-CREATE TABLE Companies (
-    Id INT IDENTITY PRIMARY KEY,
-    Name NVARCHAR(100),
-    Supervisor NVARCHAR(100),
-    Address NVARCHAR(150),
-    MaxPlaces INT
-);
-
-CREATE TABLE Registrations (
-    Id INT IDENTITY PRIMARY KEY,
-    StudentId INT FOREIGN KEY REFERENCES Students(Id),
-    CompanyId INT FOREIGN KEY REFERENCES Companies(Id),
-    RegisteredAt DATETIME
-);
+```markdown
+Projekt_Praktyki_Zawodowe/
+│
+├── Program.cs
+├── Projekt_Praktyki_Zawodowe.db          ← baza danych SQLite (tworzona automatycznie)
+├── Umowy/                                ← folder z wygenerowanymi umowami (.txt)
+│
+├── Helpers/
+│   └── DbHelper.cs                       ← obsługa połączenia z bazą danych
+│
+├── Managers/
+│   ├── StudentManager.cs                ← zarządzanie uczniami
+│   ├── CompanyManager.cs                ← zarządzanie firmami
+│   ├── RegistrationManager.cs           ← przypisywanie uczniów do firm
+│   ├── AgreementManager.cs              ← generowanie i zapis umowy
+│   └── EmailSender.cs                   ← wysyłanie umowy mailem do ucznia
 ```
 
 ---
 
-## ▶️ Uruchomienie
+## 💡 Jak uruchomić projekt
 
-1. Otwórz projekt w Visual Studio lub innym środowisku zgodnym z .NET.
-2. Zbuduj projekt (`Build`).
-3. Uruchom aplikację (`Start` lub `F5`).
-4. Korzystaj z menu tekstowego w konsoli.
+### ✅ Wymagania
+
+- .NET SDK (7.0 lub wyższy)
+- Visual Studio lub dowolny edytor obsługujący C#
+- Połączenie internetowe (jeśli chcesz wysyłać e-maile)
+
+### ▶️ Uruchomienie
+
+```bash
+git clone https://github.com/Mateusz-47/aplikacja_praktyki_zawodowe.git
+cd aplikacja_praktyki_zawodowe
+dotnet build
+dotnet run
+````
 
 ---
 
-## 📄 Przykładowy plik umowy
+##📨 Konfiguracja wysyłania e-maili (Outlook SMTP) 
 
-Aplikacja generuje plik `.txt` z umową praktyk zawodowych w formacie:
+Aplikacja automatycznie wysyła wygenerowaną umowę `.txt` na e-mail przypisany do studenta.
 
+
+### 📌 Co musisz zrobić:
+
+1. Mieć konto Outlook.com lub Microsoft 365
+2. Włączyć **uwierzytelnianie dwuskładnikowe (2FA)**
+3. Wygenerować **hasło aplikacji (App Password)**:
+
+   * Zaloguj się na: [https://account.live.com/proofs/manage](https://account.live.com/proofs/manage)
+   * Wybierz „Hasła aplikacji” → „Utwórz nowe hasło aplikacji”
+4. W pliku `EmailSender.cs` wstaw swoje dane logowania:
+
+```csharp
+var fromAddress = new MailAddress("twojemail@outlook.com", "Nazwa nadawcy");
+string fromPassword = "twoje_haslo_aplikacji"; // App password
 ```
-UMOWA O PRAKTYKI ZAWODOWE
-========================
 
-Uczeń: Jan Kowalski
-Firma: ABC Sp. z o.o.
-Data: 2025-05-01 09:30
+### 🛠 Domyślne ustawienia SMTP:
 
-Podpisy:
-____________________        ____________________
-     Uczeń                Pracodawca
+```csharp
+smtp.Host = "smtp.office365.com";
+smtp.Port = 587;
+smtp.EnableSsl = true;
+smtp.Credentials = new NetworkCredential(fromAddress.Address, fromPassword);
 ```
 
 ---
 
-## 🧾 Licencja
+## 🗂️ Generowanie i wysyłanie umów
 
-Projekt stworzony do celów edukacyjnych – brak ograniczeń licencyjnych.
+* Umowy są zapisywane automatycznie w folderze `Umowy` (obok pliku EXE).
+* Nazwa pliku: `Umowa_Imie_Nazwisko.txt`
+* Jeżeli e-mail studenta istnieje — umowa zostanie automatycznie do niego wysłana jako załącznik. [❌ NIE DZIAŁA]
 
----
-
-## ✍️ Autor
-Autor: *Mateusz Rdzanek, Julian Nagrocki*  
