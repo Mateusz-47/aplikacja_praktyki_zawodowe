@@ -33,12 +33,42 @@ Projekt_Praktyki_Zawodowe/
 │   ├── CompanyManager.cs                ← zarządzanie firmami
 │   ├── RegistrationManager.cs           ← przypisywanie uczniów do firm
 │   ├── AgreementManager.cs              ← generowanie i zapis umowy
-│   └── EmailSender.cs                   ← wysyłanie umowy mailem do ucznia
+│   └── EmailSender.cs                   ← wysyłanie umowy mailem do ucznia (nie działa)
 ```
+## 📁 Struktura bazy danych (SQL)
 
+```sql
+CREATE TABLE Students (
+    Id INT IDENTITY PRIMARY KEY,
+    FirstName NVARCHAR(50),
+    LastName NVARCHAR(50),
+    Class NVARCHAR(20),
+    Phone NVARCHAR(20),
+    Email NVARCHAR(100)
+);
+
+CREATE TABLE Companies (
+    Id INT IDENTITY PRIMARY KEY,
+    Name NVARCHAR(100),
+    Supervisor NVARCHAR(100),
+    Address NVARCHAR(150),
+    MaxPlaces INT
+);
+
+CREATE TABLE Registrations (
+    Id INT IDENTITY PRIMARY KEY,
+    StudentId INT FOREIGN KEY REFERENCES Students(Id),
+    CompanyId INT FOREIGN KEY REFERENCES Companies(Id),
+    RegisteredAt DATETIME
+);
+```
 ---
 
 ## 💡 Jak uruchomić projekt
+Zmień ciąg połączenia (`ConnectionString`) w pliku `Program.cs` na własny, jeśli to konieczne:
+   ```csharp
+   private const string ConnectionString = "Server=...;Database=...;User ID=...;Password=...;";
+   ```
 
 ### ✅ Wymagania
 
